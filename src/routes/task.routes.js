@@ -6,6 +6,9 @@ const router = express.Router();
 
 router.post('/create-task', authMiddleware.authUser, taskController.createTask);
 router.get('/get-tasks', authMiddleware.authUser, taskController.getTasks);
+router.patch('/update-task/:id', authMiddleware.authUser, taskController.updateTask);
+router.delete('/delete-task/:id', authMiddleware.authUser, taskController.deleteTask);
+
 
 
 module.exports = router;

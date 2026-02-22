@@ -35,4 +35,60 @@ async function getTasks(req, res) {
 
 }
 
-module.exports = {createTask, getTasks}
+async function updateTask(req, res) {
+
+    const taskId = req.params.id;
+    const userId = req.user.id;
+    const task = await taskModel.findById(taskId);
+
+    if(!task){
+        return res.status(404).json({
+            message:"Task not found"
+        })
+    }
+
+    if(task.user.toString() !== userId){
+        return res.status(403).json({
+            message:"You are not authorized to update this task"
+        })
+    }
+
+    const { title, description, status } = req.body;
+
+    const updatedTask = await taskModel.findByIdAndUpdate(taskId, {
+        title,
+        description,
+        status
+    }, { new: true });
+    
+    res.status(200).json({
+        message:"Task Updated",
+        updatedTask
+    })
+}
+
+async function deleteTask(req,res){
+    const taskId = req.params.id;
+    const userId = req.user.id;
+    const task = await taskModel.findById(taskId);
+
+    if(!task){
+        return res.status(404).json({
+            message:"Task not found"
+        })
+    }
+
+    if(task.user.toString() !== userId){
+        return res.status(403).json({
+            message:"You are not authorized to delete this task"
+        })
+    }
+
+    await taskModel.findByIdAndDelete(taskId);
+
+    res.status(200).json({
+        message:"Task Deleted"
+    })
+}
+
+module.exports = {createTask, getTasks, updateTask, deleteTask}
